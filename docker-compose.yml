@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: portal_nginx
+    restart: alwalys
+    depends_on:
+      - php7-fpm
+    links:
+      - php7-fpm
+    volumes:
+      - ./logs/nginx-error.log:/var/log/nginx/error.log
+      - ./logs/nginx-access.log:/var/log/nginx/access.log 
+  php7-fpm:
+    build: ./php
+    container_name: portal_php
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/www/portal:/var/www/portal
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      JOOMA_DB_HOST: db
+      JOOMA_DB_PASSWORD:
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD:
+
